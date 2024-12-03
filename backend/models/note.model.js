@@ -4,13 +4,9 @@ const noteSchema = new mongoose.Schema({
   title: { type: String, required: true },
   content: { type: String, required: true },
   tags: { type: [String], default: [] },
-  isPinned: { type: Boolean, default: Date.now },
-  userId: { type: Date, required: true },
-  createdOn: { type: Date, default: Date.now },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Use ObjectId
+  isPinned: { type: Boolean, default: false }, // Boolean type
+  createdOn: { type: Date, default: Date.now }, // Ensure a timestamp
 });
 
-// Create the User model
-const Note = mongoose.model("Note", noteSchema);
-
-// Export the User model
-module.exports = Note;
+module.exports = mongoose.model("Note", noteSchema);
