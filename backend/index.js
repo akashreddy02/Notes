@@ -6,6 +6,7 @@ const config = require("./config.json");
 const mongoose = require("mongoose");
 const User = require("./models/user.model");
 const Note = require("./models/note.model");
+const { generateToken } = require("./utilities");
 //const authenticateToken = require("./utilities");
 
 dotenv.config();
@@ -115,7 +116,7 @@ app.post("/login", async (req, res) => {
       const accessToken = jwt.sign(
         { user: userInfo },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "36000m" }
+        { expiresIn: "10d" }
       );
 
       return res.json({

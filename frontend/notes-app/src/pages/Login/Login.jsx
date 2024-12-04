@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PasswordInput from "../../components/Input/PasswordInput";
 import { validateEmail } from "../../utils/Helper"; // Ensure correct path for helper.js
+import axiosInstance from "../../utils/axioInstance";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null); // State for error message
+
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -16,8 +19,32 @@ const Login = () => {
     if (!validateEmail(email)) {
       setError("Please enter a valid email.");
       return;
+    }
 
-      setError("");
+    setError("");
+
+    try {
+      const response = await axiosInstance.post("/login", {
+        email: email,
+        password: password,
+      });
+
+      if (response.data && response.data.accessToken) {
+        localStorage.setItem("token", response.data.accessToken);
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Login Error:", error); // Log the full error object
+
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        setError(error.response.data.message); // Display server error
+      } else {
+        setError("AN UNEXPECTED ERROR OCCURED"); // Fallback for unknown issues
+      }
     }
 
     // Check if both email and password are entered
